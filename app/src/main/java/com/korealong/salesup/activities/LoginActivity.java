@@ -1,14 +1,12 @@
 package com.korealong.salesup.activities;
 
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,13 +45,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private Button appCompatButtonLogin;
 
-    private TextView textViewLinkRegister;
 
     public InputValidation inputValidation;
     public DatabaseHelper databaseHelper;
 
-    private RequestQueue requestQueue;
-    private StringRequest request;
+    public RequestQueue requestQueue;
+    public StringRequest request;
 
     public User user;
 
@@ -78,7 +75,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void initListeners() {
         appCompatButtonLogin.setOnClickListener(this);
-        textViewLinkRegister.setOnClickListener(this);
     }
 
     private void initViews() {
@@ -91,7 +87,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         appCompatButtonLogin = (Button) findViewById(R.id.appCompatButtonLogin);
 
-        textViewLinkRegister = (TextView) findViewById(R.id.textViewLinkRegister);
         PreferenceUtils utils = new PreferenceUtils();
         if (utils.getEmail(this) != null ){
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -119,7 +114,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (!inputValidation.isInputEditTextFilled(edtPassword, textInputLayoutPassword, getString(R.string.error_message_password))) {
             return;
         }
-
         saveUserToSQLite();
 
         getUserFromServer();
