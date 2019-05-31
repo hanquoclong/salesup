@@ -16,7 +16,7 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_home"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="40dp"
             android:background="@color/colorPrimary">
 
             <TextView
@@ -25,7 +25,7 @@
                 android:layout_gravity="center"
                 android:text="Home"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="20sp" />
         </android.support.v7.widget.Toolbar>
     </LinearLayout>
 
@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:padding="1dp"
+            android:padding="2dp"
             android:weightSum="2">
 
             <ImageView
@@ -65,27 +65,29 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_weight="0">
+        android:layout_height="30dp"
+        android:layout_weight="0"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal">
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView_factory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:id="@+id/recyclerViewItems"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
                 android:orientation="horizontal">
-
             </android.support.v7.widget.RecyclerView>
     </LinearLayout>
     <LinearLayout
         android:layout_weight="8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView_product"
+        <ListView
+            android:id="@+id/listview_product"
             android:background="@android:color/darker_gray"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        </android.support.v7.widget.RecyclerView>
+        </ListView>
     </LinearLayout>
 
     <LinearLayout

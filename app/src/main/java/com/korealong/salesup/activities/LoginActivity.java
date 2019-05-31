@@ -21,6 +21,7 @@ import com.korealong.salesup.MainActivity;
 import com.korealong.salesup.R;
 import com.korealong.salesup.database.DatabaseHelper;
 import com.korealong.salesup.helper.InputValidation;
+import com.korealong.salesup.helper.ServerHelper;
 import com.korealong.salesup.model.User;
 import com.korealong.salesup.utils.PreferenceUtils;
 
@@ -48,6 +49,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     public InputValidation inputValidation;
     public DatabaseHelper databaseHelper;
+    public ServerHelper serverHelper;
 
     public RequestQueue requestQueue;
     public StringRequest request;
@@ -70,6 +72,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void initObjects() {
         databaseHelper = new DatabaseHelper(activity);
         inputValidation = new InputValidation(activity);
+        serverHelper = new ServerHelper();
         user = new User();
     }
 
@@ -147,7 +150,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             PreferenceUtils.savePassword(password, LoginActivity.this);
                             Intent accountsIntent = new Intent(activity, MainActivity.class);
                             accountsIntent.putExtra("EMAIL", email);
-                            emptyInputEditText();
+                            edtEmail.setText(null);
+                            edtPassword.setText(null);
                             startActivity(accountsIntent);
                             finish();
                         }
@@ -177,8 +181,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         requestQueue.add(request);
     }
 
-    private void emptyInputEditText() {
-        edtEmail.setText(null);
-        edtPassword.setText(null);
-    }
+
 }
