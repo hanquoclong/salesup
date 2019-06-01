@@ -17,8 +17,10 @@ import com.android.volley.toolbox.Volley;
 import com.korealong.salesup.MainActivity;
 import com.korealong.salesup.adapter.FactoryAdapter;
 import com.korealong.salesup.adapter.ProductAdapter;
+import com.korealong.salesup.adapter.SaleProductAdapter;
 import com.korealong.salesup.model.Factorys;
 import com.korealong.salesup.model.Products;
+import com.korealong.salesup.model.SaleProduct;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,11 +35,11 @@ import static android.content.ContentValues.TAG;
 import static com.korealong.salesup.utils.Constants.URL_GET_ALL_PRODUCT;
 import static com.korealong.salesup.utils.Constants.URL_GET_FACTORY;
 import static com.korealong.salesup.utils.Constants.URL_GET_PRODUCT;
+import static com.korealong.salesup.utils.Constants.URL_GET_SALE_PRODUCT;
 
-public class ServerHelper {
+public class ServerHelper extends MainActivity {
 
     //public RequestQueue requestQueue;
-    MainActivity mainActivity = new MainActivity();
 
 
     public void getFactoryFromServer(final ArrayList<Factorys> aFac, final FactoryAdapter adapter, Context context) {
@@ -133,7 +135,7 @@ public class ServerHelper {
         final JsonArrayRequest jsonArrayRequest =  new JsonArrayRequest(link, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                if (response != null && response.length() != 2) {
+                if (response != null && response.length() > 2) {
                     lvProduct.removeFooterView(ftProgress);
                     int idproduct = 0;
                     int idfac = 0;
@@ -160,7 +162,7 @@ public class ServerHelper {
                     }
                 }
                 else {
-                    mainActivity.limitdata = true;
+                    limitdata = true;
                     lvProduct.removeFooterView(ftProgress);
                     Toast.makeText(context, "Đã hết dữ liệu.", Toast.LENGTH_SHORT).show();
                 }
@@ -172,5 +174,57 @@ public class ServerHelper {
             }
         });
         requestQueue.add(jsonArrayRequest);
+    }
+
+    public void getSaleProductFromServer(Context context, final SaleProductAdapter saleProductAdapter, final ArrayList<SaleProduct> arrSaleP){
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL_GET_SALE_PRODUCT, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                if (response != null)
+                {
+                    int idsale = 0;
+                    int idtype = 0;
+                    int idproduct = 0;
+                    int idfac = 0;
+                    String nametype = "";
+                    String nameproduct = "";
+                    String description = "";
+                    int unitprice = 0;
+                    int instock = 0;
+                    String img;
+                    for (int i = 0 ; i< response.length(); i++)
+                    {
+                        try {
+                            JSONObject jsonObject = response.getJSONObject(i);
+                            idsale = jsonObject.getInt("idsale");
+                            idtype = jsonObject.getInt("idtype");
+                            idproduct= jsonObject.getInt("idproduct");
+                            idfac = jsonObject.getInt("idfac");
+                            nametype = jsonObject.getString("nametype");
+                            nameproduct = jsonObject.getString("nameproduct");
+                            description = jsonObject.getString("description");
+                            unitprice = jsonObject.getInt("unitprice");
+                            instock = jsonObject.getInt("instock");
+                            img = jsonObject.getString("img");
+                            arrSaleP.add(new SaleProduct(idsale,idtype,idproduct,idfac,nametype,nameproduct,description,unitprice,instock,img));
+                            saleProductAdapter.notifyDataSetChanged();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        requestQueue.add(jsonArrayRequest);
+
     }
 }

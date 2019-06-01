@@ -21,9 +21,11 @@ import android.widget.ListView;
 import com.korealong.salesup.activities.DetailProductActivity;
 import com.korealong.salesup.adapter.FactoryAdapter;
 import com.korealong.salesup.adapter.ProductAdapter;
+import com.korealong.salesup.adapter.SaleProductAdapter;
 import com.korealong.salesup.helper.ServerHelper;
 import com.korealong.salesup.model.Factorys;
 import com.korealong.salesup.model.Products;
+import com.korealong.salesup.model.SaleProduct;
 
 
 import java.util.ArrayList;
@@ -32,10 +34,9 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
 
-    ImageView imgSale1,imgSale2;
     Toolbar toolbar_home;
     ListView listview_product;
-    RecyclerView recyclerview_factory;
+    RecyclerView recyclerview_factory,recyclerview_saleproduct;
     View footer_progress;
 
     ArrayList<Factorys> arrFac;
@@ -44,8 +45,11 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Products> arrProduct;
     ProductAdapter productAdapter;
 
+    ArrayList<SaleProduct> arrSale;
+    SaleProductAdapter saleProductAdapter;
+
     ServerHelper serverHelper;
-    int page = 1;
+    int page = 0;
     boolean isLoading = false;
     public static boolean limitdata = false;
     mHandler mHandler;
@@ -61,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         initView();
         iniObject();
         serverHelper.getFactoryFromServer(arrFac,factoryAdapter,this);
-        serverHelper.getAllProductFromServer(getApplicationContext(),page,arrProduct,productAdapter,listview_product,footer_progress);
+        serverHelper.getSaleProductFromServer(this,saleProductAdapter,arrSale);
         loadMoreProduct();
     }
 
@@ -99,16 +103,15 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void initView() {
-        imgSale1 = findViewById(R.id.imgSale1);
-        imgSale2 = findViewById(R.id.imgSale2);
         recyclerview_factory = findViewById(R.id.recyclerViewItems);
+        recyclerview_saleproduct = findViewById(R.id.recyclerview_saleproduct);
         toolbar_home = findViewById(R.id.toolbar_home);
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         footer_progress = inflater.inflate(R.layout.layout_progressbar,null );
 
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
-        recyclerview_factory.setLayoutManager(linearLayoutManager);
+        LinearLayoutManager llmFac = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+        recyclerview_factory.setLayoutManager(llmFac);
         listview_product = findViewById(R.id.listview_product);
 
         arrFac = new ArrayList<>();
@@ -119,6 +122,12 @@ public class MainActivity extends AppCompatActivity {
         productAdapter = new ProductAdapter(getApplicationContext(),arrProduct);
         listview_product.setAdapter(productAdapter);
         listview_product.addFooterView(footer_progress);
+
+        LinearLayoutManager llmSale = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+        recyclerview_saleproduct.setLayoutManager(llmSale);
+        arrSale = new ArrayList<>();
+        saleProductAdapter = new SaleProductAdapter(getApplicationContext(),arrSale);
+        recyclerview_saleproduct.setAdapter(saleProductAdapter);
 
     }
 
