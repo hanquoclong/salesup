@@ -1,6 +1,7 @@
 package com.korealong.salesup.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +25,9 @@ import java.util.ArrayList;
 
 
 public class FactoryAdapter extends RecyclerView.Adapter<FactoryAdapter.ItemHolder> {
+
+
+    ServerHelper serverHelper = new ServerHelper();
 
     Context context;
     ArrayList<Factorys> arrFac;
@@ -48,7 +53,9 @@ public class FactoryAdapter extends RecyclerView.Adapter<FactoryAdapter.ItemHold
         itemHolder.txtfac.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, ""+arrFac.get(i).nameFactory, Toast.LENGTH_SHORT).show();
+                int idfac = arrFac.get(i).idFactory;
+                //serverHelper.getProductFromServer(1,context,idfac);
+                //Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
             }
         });
     }

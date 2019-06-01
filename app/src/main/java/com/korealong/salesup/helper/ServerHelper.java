@@ -1,8 +1,9 @@
 package com.korealong.salesup.helper;
 
 import android.content.Context;
-import android.content.Intent;
-import android.util.Base64;
+import android.util.Log;
+import android.view.View;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -14,7 +15,6 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.korealong.salesup.MainActivity;
-import com.korealong.salesup.activities.LoginActivity;
 import com.korealong.salesup.adapter.FactoryAdapter;
 import com.korealong.salesup.adapter.ProductAdapter;
 import com.korealong.salesup.model.Factorys;
@@ -29,16 +29,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+import static android.content.ContentValues.TAG;
+import static com.korealong.salesup.utils.Constants.URL_GET_ALL_PRODUCT;
 import static com.korealong.salesup.utils.Constants.URL_GET_FACTORY;
 import static com.korealong.salesup.utils.Constants.URL_GET_PRODUCT;
 
 public class ServerHelper {
 
-    public RequestQueue requestQueue;
+    //public RequestQueue requestQueue;
+    MainActivity mainActivity = new MainActivity();
 
 
     public void getFactoryFromServer(final ArrayList<Factorys> aFac, final FactoryAdapter adapter, Context context) {
-        requestQueue = Volley.newRequestQueue(context);
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
         JsonArrayRequest jsonArrayRequest =  new JsonArrayRequest(URL_GET_FACTORY, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -69,9 +72,9 @@ public class ServerHelper {
         requestQueue.add(jsonArrayRequest);
     }
 
-    public void getProductFromServer(int mpage, Context context, final int IDFac)
+    public void getProductFromServer(int mpage,Context context, final int IDFac)
     {
-        requestQueue = Volley.newRequestQueue(context);
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
         String link = URL_GET_PRODUCT+String.valueOf(mpage);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, link, new Response.Listener<String>() {
             @Override
@@ -122,5 +125,52 @@ public class ServerHelper {
             }
         };
         requestQueue.add(stringRequest);
+    }
+
+    public void getAllProductFromServer(final Context context, int page , final ArrayList<Products> arrProduct, final ProductAdapter productAdapter, final ListView lvProduct, final View ftProgress){
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        String link = URL_GET_ALL_PRODUCT+String.valueOf(page);
+        final JsonArrayRequest jsonArrayRequest =  new JsonArrayRequest(link, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                if (response != null && response.length() != 2) {
+                    lvProduct.removeFooterView(ftProgress);
+                    int idproduct = 0;
+                    int idfac = 0;
+                    String nameproduct = "";
+                    String description = "";
+                    int unitprice = 0;
+                    int instock = 0;
+                    String img;
+                    try {
+                        for (int i = 0; i < response.length(); i++) {
+                            JSONObject jsonObject = response.getJSONObject(i);
+                            idproduct = jsonObject.getInt("idproduct");
+                            idfac = jsonObject.getInt("idfac");
+                            nameproduct = jsonObject.getString("nameproduct");
+                            description = jsonObject.getString("description");
+                            unitprice = jsonObject.getInt("unitprice");
+                            instock = jsonObject.getInt("instock");
+                            img = jsonObject.getString("img");
+                            arrProduct.add(new Products(idproduct, idfac, nameproduct, description, unitprice, instock, img));
+                            productAdapter.notifyDataSetChanged();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    mainActivity.limitdata = true;
+                    lvProduct.removeFooterView(ftProgress);
+                    Toast.makeText(context, "Đã hết dữ liệu.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, error.toString());
+            }
+        });
+        requestQueue.add(jsonArrayRequest);
     }
 }

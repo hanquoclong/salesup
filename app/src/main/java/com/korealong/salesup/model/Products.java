@@ -1,6 +1,8 @@
 package com.korealong.salesup.model;
 
-public class Products {
+import java.io.Serializable;
+
+public class Products implements Serializable {
     public int idProduct;
     public int idFac;
     public String nameProduct;
