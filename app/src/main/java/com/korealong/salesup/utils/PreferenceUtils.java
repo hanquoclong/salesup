@@ -10,7 +10,7 @@ public class PreferenceUtils {
     public static boolean saveEmail(String email, Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor prefsEditor = prefs.edit();
-        prefsEditor.putString(Constants.KEY_EMAIL,email);
+        prefsEditor.putString("email",email);
         prefsEditor.apply();
         return true;
     }
@@ -18,18 +18,6 @@ public class PreferenceUtils {
     public static String getEmail(Context context)
     {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(Constants.KEY_EMAIL,null);
-    }
-
-    public  static  boolean savePassword(String password, Context context){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor prefsEditor = prefs.edit();
-        prefsEditor.putString(Constants.KEY_PASSWORD,password);
-        return true;
-    }
-
-    public static String getPassword(Context context){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(Constants.KEY_PASSWORD,null);
+        return prefs.getString("email",null);
     }
 }

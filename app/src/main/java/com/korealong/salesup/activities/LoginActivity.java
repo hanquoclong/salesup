@@ -1,15 +1,13 @@
 package com.korealong.salesup.activities;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,152 +15,95 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.korealong.salesup.MainActivity;
 import com.korealong.salesup.R;
-import com.korealong.salesup.database.DatabaseHelper;
 import com.korealong.salesup.helper.InputValidation;
 import com.korealong.salesup.helper.ServerHelper;
-import com.korealong.salesup.model.User;
 import com.korealong.salesup.utils.PreferenceUtils;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.korealong.salesup.utils.Constants.URL_LOGIN;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
-
-    private final AppCompatActivity activity = LoginActivity.this;
-
+public class LoginActivity extends AppCompatActivity {
 
     public TextInputLayout textInputLayoutEmail;
     public TextInputLayout textInputLayoutPassword;
 
-    public  EditText edtEmail;
-    public  EditText edtPassword;
-
-    private Button appCompatButtonLogin;
-
-
+    public static EditText edtEmail;
+    public static EditText edtPassword;
+    private Button btnLogin;
     public InputValidation inputValidation;
-    public DatabaseHelper databaseHelper;
     public ServerHelper serverHelper;
-
-    public RequestQueue requestQueue;
     public StringRequest request;
 
-    public User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        getSupportActionBar().hide();
 
         initViews();
-        initListeners();
         initObjects();
-
-        requestQueue = Volley.newRequestQueue(this);
-    }
-
-    private void initObjects() {
-        databaseHelper = new DatabaseHelper(activity);
-        inputValidation = new InputValidation(activity);
-        serverHelper = new ServerHelper();
-        user = new User();
-    }
-
-    private void initListeners() {
-        appCompatButtonLogin.setOnClickListener(this);
+        initEvent();
     }
 
     private void initViews() {
-
         textInputLayoutEmail = (TextInputLayout) findViewById(R.id.textInputLayoutEmail);
         textInputLayoutPassword = (TextInputLayout) findViewById(R.id.textInputLayoutPassword);
-
-        edtEmail = (EditText) findViewById(R.id.textInputEditTextEmail);
-        edtPassword = (EditText) findViewById(R.id.textInputEditTextPassword);
-
-        appCompatButtonLogin = (Button) findViewById(R.id.appCompatButtonLogin);
-
-        PreferenceUtils utils = new PreferenceUtils();
-        if (utils.getEmail(this) != null ){
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-        }
-
+        edtEmail = (EditText) findViewById(R.id.edt_email);
+        edtPassword = (EditText) findViewById(R.id.edt_password);
+        btnLogin = (Button) findViewById(R.id.btn_login);
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.appCompatButtonLogin:
-                verifyFromSQLite();
-                break;
-        }
+    private void initObjects() {
+        inputValidation = new InputValidation(this);
+        serverHelper = new ServerHelper();
     }
 
-    private void verifyFromSQLite() {
-        if (!inputValidation.isInputEditTextFilled(edtEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
-            return;
-        }
-        if (!inputValidation.isInputEditTextEmail(edtEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
-            return;
-        }
-        if (!inputValidation.isInputEditTextFilled(edtPassword, textInputLayoutPassword, getString(R.string.error_message_password))) {
-            return;
-        }
-        saveUserToSQLite();
-
-        getUserFromServer();
-    }
-
-    private void saveUserToSQLite() {
-        if (!databaseHelper.checkUser(edtEmail.getText().toString().trim())) {
-
-            user.setEmail(edtEmail.getText().toString().trim());
-            user.setPassword(edtPassword.getText().toString().trim());
-
-            databaseHelper.addUser(user);
-
-
-        }
+    private void initEvent() {
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!inputValidation.isInputEditTextFilled(edtEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
+                    return;
+                }
+                if (!inputValidation.isInputEditTextEmail(edtEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
+                    return;
+                }
+                if (!inputValidation.isInputEditTextFilled(edtPassword, textInputLayoutPassword, getString(R.string.error_message_password))) {
+                    return;
+                }
+                getUserFromServer();
+            }
+        });
     }
 
     private void getUserFromServer() {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
         request = new StringRequest(Request.Method.POST, URL_LOGIN, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
-                    if (jsonObject.names().get(0).equals("success")){
+                    if (jsonObject.names().get(0).equals("success")) {
 
                         String email = edtEmail.getText().toString().trim();
-                        String password = edtPassword.getText().toString().trim();
-
-                        if (databaseHelper.checkUser(email, password)) {
-                            PreferenceUtils.saveEmail(email, LoginActivity.this);
-                            PreferenceUtils.savePassword(password, LoginActivity.this);
-                            Intent accountsIntent = new Intent(activity, MainActivity.class);
-                            accountsIntent.putExtra("EMAIL", email);
-                            edtEmail.setText(null);
-                            edtPassword.setText(null);
-                            startActivity(accountsIntent);
-                            finish();
-                        }
+                        PreferenceUtils.saveEmail(email, LoginActivity.this);
+                        Intent accountsIntent = new Intent(LoginActivity.this, HomeActivity.class);
+                        accountsIntent.putExtra("EMAIL", email);
+                        edtEmail.setText(null);
+                        edtPassword.setText(null);
+                        startActivity(accountsIntent);
+                        finish();
                     }
                     else {
-                        Toast.makeText(activity, "Error "+jsonObject.getString("error"), Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, "Error "+jsonObject.getString("error"), Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
         }, new Response.ErrorListener() {
             @Override
@@ -180,6 +121,4 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         };
         requestQueue.add(request);
     }
-
-
 }
