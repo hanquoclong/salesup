@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar_exhibition"
+                app:title="Tao don dat hang"
+                app:titleTextColor="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/colorPrimary">
+            </android.support.v7.widget.Toolbar>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+            <TextView
+                android:text="Salon:"
+                android:gravity="left"
+                android:layout_gravity="center_vertical"
+                android:textSize="20dp"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:background="@drawable/stroke_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <android.support.v7.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/edt_salon"
+                    android:padding="6dp"
+                    android:layout_width="220dp"
+                    android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/btn_salon"
+                    android:layout_marginRight="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:src="@android:drawable/arrow_down_float" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+            <TextView
+                android:text="NPP:"
+                android:gravity="left"
+                android:layout_gravity="center_vertical"
+                android:textSize="20dp"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:background="@drawable/stroke_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <android.support.v7.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/edt_factory"
+                    android:padding="6dp"
+                    android:layout_width="220dp"
+                    android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/btn_factory"
+                    android:layout_marginRight="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:src="@android:drawable/arrow_down_float" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+            <TextView
+                android:text="San pham:"
+                android:gravity="left"
+                android:layout_gravity="center_vertical"
+                android:textSize="20dp"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:background="@drawable/stroke_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <android.support.v7.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/edt_product"
+                    android:padding="6dp"
+                    android:layout_width="220dp"
+                    android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/btn_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="2dp"
+                    android:src="@android:drawable/ic_menu_search" />
+            </LinearLayout>
+        </LinearLayout>
+        <View
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black"/>
+        <ListView
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/listview_products_exhibition"
+            android:layout_width="match_parent"
+            android:layout_height="300dp">
+        </ListView>
+        <ProgressBar
+            android:id="@+id/progress_loadmore_exhibition"
+            android:layout_width="match_parent"
+            android:layout_height="25dp" />
+        <View
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black"/>
+        <TextView
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:text="Ghi chu"
+            android:textSize="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp" />
+        <EditText
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/edt_note"
+            android:background="@drawable/stroke_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="35dp" />
+        <TextView
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:text="Chiet khau"
+            android:textSize="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp" />
+        <EditText
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/edt_tax"
+            android:background="@drawable/stroke_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="35dp" />
+        <TextView
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:text="Thanh tien"
+            android:textSize="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp" />
+        <EditText
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/edt_total_price"
+            android:background="@drawable/stroke_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="35dp" />
+        <Button
+            android:id="@+id/btn_done"
+            android:text="Hoan thanh"
+            android:layout_gravity="center"
+            android:layout_width="120dp"
+            android:layout_height="50dp" />
+    </LinearLayout>
+</ScrollView>

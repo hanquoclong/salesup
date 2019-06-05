@@ -7,4 +7,5 @@ public class Constants {
     public static String URL_GET_ALL_PRODUCT = "http://longhan.000webhostapp.com/getallproduct.php?page=";
     public static String URL_GET_SALE_PRODUCT = "http://longhan.000webhostapp.com/getsaleproduct.php";
     public static String URL_LOCATION = "http://longhan.000webhostapp.com/location.php";
+    public static String URL_GET_SALON = "http://longhan.000webhostapp.com/getsalon.php";
 }

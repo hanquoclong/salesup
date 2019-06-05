@@ -5,6 +5,8 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -17,19 +19,16 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.korealong.salesup.activities.HomeActivity;
-import com.korealong.salesup.adapter.FactoryAdapter;
 import com.korealong.salesup.adapter.ProductAdapter;
 import com.korealong.salesup.adapter.SaleProductAdapter;
-import com.korealong.salesup.model.Factory;
 import com.korealong.salesup.model.Product;
 import com.korealong.salesup.model.SaleProduct;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,11 +43,12 @@ import static com.korealong.salesup.utils.Constants.URL_GET_ALL_PRODUCT;
 import static com.korealong.salesup.utils.Constants.URL_GET_FACTORY;
 import static com.korealong.salesup.utils.Constants.URL_GET_PRODUCT;
 import static com.korealong.salesup.utils.Constants.URL_GET_SALE_PRODUCT;
+import static com.korealong.salesup.utils.Constants.URL_GET_SALON;
 import static com.korealong.salesup.utils.Constants.URL_LOCATION;
 
 public class ServerHelper {
 
-    public void getFactoryFromServer(Context context, final ArrayList<Factory> arrFactory, final FactoryAdapter adapter) {
+    public void getFactoryFromServer(final Context context, final AutoCompleteTextView edtFactory) {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         JsonArrayRequest jsonArrayRequest =  new JsonArrayRequest(URL_GET_FACTORY, new Response.Listener<JSONArray>() {
             @Override
@@ -56,17 +56,19 @@ public class ServerHelper {
                 if (response != null) {
                     int ID = 0;
                     String nameFac = "";
+                    List<String> listProducts = new ArrayList<String>();
                     for (int i = 0; i < response.length(); i++) {
                         try {
                             JSONObject jsonObject = response.getJSONObject(i);
                             ID = jsonObject.getInt("idfac");
                             nameFac = jsonObject.getString("namefac");
-                            arrFactory.add(new Factory(ID,nameFac));
+                            listProducts.add(nameFac);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
-                    adapter.notifyDataSetChanged();
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1,listProducts);
+                    edtFactory.setAdapter(adapter);
                 }
             }
         }, new Response.ErrorListener() {
@@ -258,6 +260,38 @@ public class ServerHelper {
         int socketTimeout = 10000;
         RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         jsonArrayRequest.setRetryPolicy(retryPolicy);
+        requestQueue.add(jsonArrayRequest);
+    }
+
+    public void getSalonFromServer(final Context context, final AutoCompleteTextView edtSalon) {
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        final JsonArrayRequest jsonArrayRequest =  new JsonArrayRequest(URL_GET_SALON, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                if (response != null && response.length() > 2) {
+                    int salonID = 0;
+                    String salonname = "";
+                    List<String> listSalons = new ArrayList<String>();
+                    try {
+                        for (int i = 0; i < response.length(); i++) {
+                            JSONObject jsonObject = response.getJSONObject(i);
+                            salonID = jsonObject.getInt("salonid");
+                            salonname = jsonObject.getString("salonname");
+                            listSalons.add(salonname);
+                        }
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1,listSalons);
+                        edtSalon.setAdapter(adapter);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, error.toString());
+            }
+        });
         requestQueue.add(jsonArrayRequest);
     }
 }

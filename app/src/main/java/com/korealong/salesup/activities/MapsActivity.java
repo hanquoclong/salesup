@@ -51,7 +51,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -61,10 +60,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 checkPermissionAndShowCurrentLocation();
             }
         });
+        serverHelper.getLocationFromServer(getApplicationContext(),mMap);
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.getUiSettings().setZoomControlsEnabled(true);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         mMap.setMyLocationEnabled(true);
-        serverHelper.getLocationFromServer(getApplicationContext(),mMap);
+
     }
 
     @Override
@@ -72,7 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case REQUEST_USER_LOCATION:
-                if (grantResults.length > 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
                     this.showMyLocation();
                 } else {
