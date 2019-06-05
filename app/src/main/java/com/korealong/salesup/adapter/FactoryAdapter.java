@@ -6,8 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.TextView;
 import com.korealong.salesup.R;
+import com.korealong.salesup.activities.HomeActivity;
 import com.korealong.salesup.helper.ServerHelper;
 import com.korealong.salesup.model.Factory;
 import com.korealong.salesup.model.Product;
@@ -44,6 +46,7 @@ public class FactoryAdapter extends RecyclerView.Adapter<FactoryAdapter.ItemHold
             public void onClick(View v) {
                 arrProduct.clear();
                 int factoryID = arrFactory.get(i).idFactory;
+                //TODO: Ask aTrinh load more product
                 serverHelper.getProductByFactoryFromServer(context,arrProduct,1,factoryID);
             }
         });

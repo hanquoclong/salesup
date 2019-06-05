@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.korealong.salesup.R;
 import com.korealong.salesup.model.SaleProduct;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -35,9 +36,13 @@ public class SaleProductAdapter extends RecyclerView.Adapter<SaleProductAdapter.
     @Override
     public void onBindViewHolder(@NonNull ItemHolder itemHolder, int i) {
         SaleProduct saleProduct = arrSale.get(i);
-        String imgString = saleProduct.img;
+        Picasso.with(context).load(saleProduct.img)
+                .placeholder(R.drawable.no_image)
+                .error(R.drawable.error_image)
+                .into(itemHolder.imgSale);
+        /*String imgString = saleProduct.img;
         byte[] decoded = Base64.decode(imgString,Base64.DEFAULT);
-        itemHolder.imgSale.setImageBitmap(BitmapFactory.decodeByteArray(decoded,0,decoded.length));
+        itemHolder.imgSale.setImageBitmap(BitmapFactory.decodeByteArray(decoded,0,decoded.length));*/
     }
 
     @Override

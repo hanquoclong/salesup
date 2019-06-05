@@ -1,9 +1,7 @@
 package com.korealong.salesup.adapter;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.korealong.salesup.R;
 import com.korealong.salesup.model.Product;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
 public class ProductAdapter extends BaseAdapter{
@@ -40,7 +40,6 @@ public class ProductAdapter extends BaseAdapter{
         return position;
     }
 
-
     public class ViewHolder{
         public TextView txtNameProduct;
         public ImageView imgProduct;
@@ -61,11 +60,12 @@ public class ProductAdapter extends BaseAdapter{
         }
         Product products = (Product) getItem(position);
         viewHolder.txtNameProduct.setText(products.nameProduct);
-        viewHolder.txtNameProduct.setMaxLines(2);
+        viewHolder.txtNameProduct.setMaxLines(1);
         viewHolder.txtNameProduct.setEllipsize(TextUtils.TruncateAt.END);
-        imgString = arrProduct.get(position).img;
-        byte[] decoded = Base64.decode(imgString,Base64.DEFAULT);
-        viewHolder.imgProduct.setImageBitmap(BitmapFactory.decodeByteArray(decoded,0,decoded.length));
+        Picasso.with(context).load(products.img)
+                .placeholder(R.drawable.no_image)
+                .error(R.drawable.error_image)
+                .into(viewHolder.imgProduct);
         return convertView;
     }
 }

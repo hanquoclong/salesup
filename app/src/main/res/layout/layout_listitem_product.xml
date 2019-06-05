@@ -21,10 +21,11 @@
                 android:layout_height="125dp"
                 android:id="@+id/imgProduct"
                 android:adjustViewBounds="true"
-                android:layout_margin="2dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_launcher_background"/>
             <TextView
+                android:layout_marginRight="2dp"
+                android:layout_marginLeft="2dp"
                 android:layout_gravity="center"
                 android:id="@+id/txtNameProduct"
                 android:layout_width="wrap_content"

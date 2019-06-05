@@ -20,4 +20,11 @@ public class PreferenceUtils {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString("email",null);
     }
+
+    public static void clearCurrentUser(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        prefsEditor.remove("email");
+        prefsEditor.apply();
+    }
 }

@@ -1,17 +1,28 @@
 package com.korealong.salesup.helper;
 
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.korealong.salesup.activities.HomeActivity;
 import com.korealong.salesup.adapter.FactoryAdapter;
 import com.korealong.salesup.adapter.ProductAdapter;
@@ -22,13 +33,18 @@ import com.korealong.salesup.model.SaleProduct;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import static android.content.ContentValues.TAG;
 import static com.korealong.salesup.utils.Constants.URL_GET_ALL_PRODUCT;
 import static com.korealong.salesup.utils.Constants.URL_GET_FACTORY;
 import static com.korealong.salesup.utils.Constants.URL_GET_PRODUCT;
 import static com.korealong.salesup.utils.Constants.URL_GET_SALE_PRODUCT;
+import static com.korealong.salesup.utils.Constants.URL_LOCATION;
 
 public class ServerHelper {
 
@@ -114,7 +130,7 @@ public class ServerHelper {
             @Override
             public void onResponse(JSONArray response) {
                 if (response != null && response.length() > 2) {
-                    progressBar.setVisibility(View.GONE);
+
                     int productID = 0;
                     int factoryID = 0;
                     String nameproduct = "";
@@ -135,6 +151,7 @@ public class ServerHelper {
                             arrProduct.add(new Product(productID, factoryID, nameproduct, description, unitprice, instock, img));
                         }
                         productAdapter.notifyDataSetChanged();
+                        progressBar.setVisibility(View.GONE);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -198,6 +215,49 @@ public class ServerHelper {
 
             }
         });
+        requestQueue.add(jsonArrayRequest);
+    }
+
+    public void getLocationFromServer(final Context context, final GoogleMap googleMap) {
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL_LOCATION, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                if (response != null) {
+                    int id = 0;
+                    Double iLatitude = 0.0;
+                    Double iLongitude = 0.0;
+                    Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                    for (int i = 0 ; i < response.length(); i++) {
+                        try {
+                            JSONObject jsonObject = response.getJSONObject(i);
+                            id = jsonObject.getInt("id");
+                            iLatitude = jsonObject.getDouble("latitude");
+                            iLongitude = jsonObject.getDouble("longitude");
+                            List<Address> listAddress = geocoder.getFromLocation(iLatitude,iLongitude,1);
+                            String address = listAddress.get(0).getAddressLine(0);
+                            googleMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(iLatitude,iLongitude))
+                                .title(String.valueOf(id))
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                                .snippet(address));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        int socketTimeout = 10000;
+        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        jsonArrayRequest.setRetryPolicy(retryPolicy);
         requestQueue.add(jsonArrayRequest);
     }
 }

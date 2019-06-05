@@ -3,8 +3,8 @@ package com.korealong.salesup.model;
 import java.io.Serializable;
 
 public class Product implements Serializable {
-    public int idProduct;
-    public int idFac;
+    public int productID;
+    public int factoryID;
     public String nameProduct;
     public String description;
     public int unitPrice;
@@ -12,8 +12,8 @@ public class Product implements Serializable {
     public String img;
 
     public Product(int idProduct, int idFac, String nameProduct, String description, int unitPrice, int inStock, String img) {
-        this.idProduct = idProduct;
-        this.idFac = idFac;
+        this.productID = idProduct;
+        this.factoryID = idFac;
         this.nameProduct = nameProduct;
         this.description = description;
         this.unitPrice = unitPrice;
