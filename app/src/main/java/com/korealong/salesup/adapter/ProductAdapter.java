@@ -1,14 +1,23 @@
 package com.korealong.salesup.adapter;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.korealong.salesup.MainActivity;
 import com.korealong.salesup.R;
+import com.korealong.salesup.activities.CreateOrder;
 import com.korealong.salesup.model.Product;
 import com.squareup.picasso.Picasso;
 
@@ -18,7 +27,6 @@ public class ProductAdapter extends BaseAdapter{
 
     private Context context;
     private ArrayList<Product> arrProduct;
-    private String imgString;
 
     public ProductAdapter(Context context, ArrayList<Product> arrProduct) {
         this.context = context;
@@ -40,9 +48,8 @@ public class ProductAdapter extends BaseAdapter{
         return position;
     }
 
-    public class ViewHolder{
+    public class ViewHolder {
         public TextView txtNameProduct;
-        public ImageView imgProduct;
     }
 
     @Override
@@ -51,21 +58,19 @@ public class ProductAdapter extends BaseAdapter{
         if (viewHolder == null){
             viewHolder = new ViewHolder();
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.layout_listitem_product,null);
-            viewHolder.imgProduct = convertView.findViewById(R.id.imgProduct);
-            viewHolder.txtNameProduct = convertView.findViewById(R.id.txtNameProduct);
+            convertView = inflater.inflate(R.layout.layout_item_popup,null);
+            viewHolder.txtNameProduct = convertView.findViewById(R.id.txt_name);
             convertView.setTag(viewHolder);
         }else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         Product products = (Product) getItem(position);
+        if (arrProduct.get(position).saleID != 0) {
+            viewHolder.txtNameProduct.setTextColor(Color.RED);
+        }
         viewHolder.txtNameProduct.setText(products.nameProduct);
-        viewHolder.txtNameProduct.setMaxLines(1);
+        viewHolder.txtNameProduct.setMaxLines(3);
         viewHolder.txtNameProduct.setEllipsize(TextUtils.TruncateAt.END);
-        Picasso.with(context).load(products.img)
-                .placeholder(R.drawable.no_image)
-                .error(R.drawable.error_image)
-                .into(viewHolder.imgProduct);
         return convertView;
     }
 }

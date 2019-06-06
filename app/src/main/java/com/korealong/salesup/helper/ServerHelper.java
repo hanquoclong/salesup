@@ -24,10 +24,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.korealong.salesup.activities.HomeActivity;
+import com.korealong.salesup.adapter.FactoryAdapter;
+import com.korealong.salesup.adapter.OrderProductAdapter;
 import com.korealong.salesup.adapter.ProductAdapter;
 import com.korealong.salesup.adapter.SaleProductAdapter;
+import com.korealong.salesup.adapter.SalonAdapter;
+import com.korealong.salesup.model.Factory;
+import com.korealong.salesup.model.OrderProduct;
 import com.korealong.salesup.model.Product;
 import com.korealong.salesup.model.SaleProduct;
+import com.korealong.salesup.model.Salon;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +41,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -42,33 +49,33 @@ import static android.content.ContentValues.TAG;
 import static com.korealong.salesup.utils.Constants.URL_GET_ALL_PRODUCT;
 import static com.korealong.salesup.utils.Constants.URL_GET_FACTORY;
 import static com.korealong.salesup.utils.Constants.URL_GET_PRODUCT;
+import static com.korealong.salesup.utils.Constants.URL_GET_SALE;
 import static com.korealong.salesup.utils.Constants.URL_GET_SALE_PRODUCT;
 import static com.korealong.salesup.utils.Constants.URL_GET_SALON;
 import static com.korealong.salesup.utils.Constants.URL_LOCATION;
 
 public class ServerHelper {
 
-    public void getFactoryFromServer(final Context context, final AutoCompleteTextView edtFactory) {
+    public void getFactoryFromServer(final Context context, final ArrayList<Factory> arrFactory, final FactoryAdapter factoryAdapter) {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         JsonArrayRequest jsonArrayRequest =  new JsonArrayRequest(URL_GET_FACTORY, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 if (response != null) {
                     int ID = 0;
-                    String nameFac = "";
+                    String nameFactory = "";
                     List<String> listProducts = new ArrayList<String>();
                     for (int i = 0; i < response.length(); i++) {
                         try {
                             JSONObject jsonObject = response.getJSONObject(i);
                             ID = jsonObject.getInt("idfac");
-                            nameFac = jsonObject.getString("namefac");
-                            listProducts.add(nameFac);
+                            nameFactory = jsonObject.getString("namefac");
+                            arrFactory.add(new Factory(ID,nameFactory));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1,listProducts);
-                    edtFactory.setAdapter(adapter);
+                    factoryAdapter.notifyDataSetChanged();
                 }
             }
         }, new Response.ErrorListener() {
@@ -80,7 +87,7 @@ public class ServerHelper {
         requestQueue.add(jsonArrayRequest);
     }
 
-    public void getProductByFactoryFromServer(final Context context, final ArrayList<Product> arrProduct, int mpage, final int factoryID) {
+    public void getProductByFactoryFromServer(final Context context, final ArrayList<Product> arrProduct, final ProductAdapter productAdapter, int mpage, final int factoryID) {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         String link = URL_GET_PRODUCT+String.valueOf(mpage)+"&idfac="+factoryID;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, link, new Response.Listener<String>() {
@@ -93,8 +100,7 @@ public class ServerHelper {
                     String description = "";
                     int unitprice = 0;
                     int instock = 0;
-                    String img;
-                    ProductAdapter productAdapter = new ProductAdapter(context,arrProduct);
+                    int idsale = 0;
                     try {
                         JSONArray jsonArray = new JSONArray(response);
                         for (int i =0; i<jsonArray.length();i++) {
@@ -105,12 +111,10 @@ public class ServerHelper {
                             description = jsonObject.getString("description");
                             unitprice = jsonObject.getInt("unitprice");
                             instock = jsonObject.getInt("instock");
-                            img = jsonObject.getString("img");
-                            arrProduct.add(new Product(productID,factoryID,nameproduct,description,unitprice,instock,img));
-                            productAdapter.notifyDataSetChanged();
+                            idsale = jsonObject.getInt("idsale");
+                            arrProduct.add(new Product(productID,factoryID,nameproduct,description,unitprice,instock,idsale));
                         }
-                        HomeActivity.viewProducts.setAdapter(productAdapter);
-                        Log.d("click item fac" , ""+arrProduct.size());
+                        productAdapter.notifyDataSetChanged();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -139,7 +143,7 @@ public class ServerHelper {
                     String description = "";
                     int unitprice = 0;
                     int instock = 0;
-                    String img;
+                    int idsale =0;
                     try {
                         for (int i = 0; i < response.length(); i++) {
                             JSONObject jsonObject = response.getJSONObject(i);
@@ -149,8 +153,8 @@ public class ServerHelper {
                             description = jsonObject.getString("description");
                             unitprice = jsonObject.getInt("unitprice");
                             instock = jsonObject.getInt("instock");
-                            img = jsonObject.getString("img");
-                            arrProduct.add(new Product(productID, factoryID, nameproduct, description, unitprice, instock, img));
+                            idsale = jsonObject.getInt("idsale");
+                            arrProduct.add(new Product(productID, factoryID, nameproduct, description, unitprice, instock, idsale));
                         }
                         productAdapter.notifyDataSetChanged();
                         progressBar.setVisibility(View.GONE);
@@ -168,53 +172,6 @@ public class ServerHelper {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, error.toString());
-            }
-        });
-        requestQueue.add(jsonArrayRequest);
-    }
-
-    public void getSaleProductFromServer(Context context,final ArrayList<SaleProduct> arrSaleP, final SaleProductAdapter saleProductAdapter){
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL_GET_SALE_PRODUCT, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                if (response != null) {
-                    int saleID = 0;
-                    int typeID = 0;
-                    int productID = 0;
-                    int factoryID = 0;
-                    String nametype = "";
-                    String nameproduct = "";
-                    String description = "";
-                    int unitprice = 0;
-                    int instock = 0;
-                    String img;
-                    for (int i = 0 ; i< response.length(); i++) {
-                        try {
-                            JSONObject jsonObject = response.getJSONObject(i);
-                            saleID = jsonObject.getInt("idsale");
-                            typeID = jsonObject.getInt("idtype");
-                            productID= jsonObject.getInt("idproduct");
-                            factoryID = jsonObject.getInt("idfac");
-                            nametype = jsonObject.getString("nametype");
-                            nameproduct = jsonObject.getString("nameproduct");
-                            description = jsonObject.getString("description");
-                            unitprice = jsonObject.getInt("unitprice");
-                            instock = jsonObject.getInt("instock");
-                            img = jsonObject.getString("img");
-                            arrSaleP.add(new SaleProduct(saleID,typeID,productID,factoryID,nametype,nameproduct,description,unitprice,instock,img));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        saleProductAdapter.notifyDataSetChanged();
-                    }
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
             }
         });
         requestQueue.add(jsonArrayRequest);
@@ -263,7 +220,7 @@ public class ServerHelper {
         requestQueue.add(jsonArrayRequest);
     }
 
-    public void getSalonFromServer(final Context context, final AutoCompleteTextView edtSalon) {
+    public void getSalonFromServer(final Context context, final ArrayList<Salon> arrSalon, final SalonAdapter salonAdapter) {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         final JsonArrayRequest jsonArrayRequest =  new JsonArrayRequest(URL_GET_SALON, new Response.Listener<JSONArray>() {
             @Override
@@ -271,16 +228,14 @@ public class ServerHelper {
                 if (response != null && response.length() > 2) {
                     int salonID = 0;
                     String salonname = "";
-                    List<String> listSalons = new ArrayList<String>();
                     try {
                         for (int i = 0; i < response.length(); i++) {
                             JSONObject jsonObject = response.getJSONObject(i);
                             salonID = jsonObject.getInt("salonid");
                             salonname = jsonObject.getString("salonname");
-                            listSalons.add(salonname);
+                            arrSalon.add(new Salon(salonID,salonname));
                         }
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1,listSalons);
-                        edtSalon.setAdapter(adapter);
+                        salonAdapter.notifyDataSetChanged();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -290,6 +245,48 @@ public class ServerHelper {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, error.toString());
+            }
+        });
+        requestQueue.add(jsonArrayRequest);
+    }
+
+    public void getSaleFromServer(Context context, final ArrayList<SaleProduct> arrSaleProduct, final SaleProductAdapter saleProductAdapter) {
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL_GET_SALE, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                if (response != null) {
+                    int saleID = 0;
+                    int saleType = 0;
+                    int productID = 0;
+                    String productName = "";
+                    int saleNumber= 0;
+                    String orderDate;
+                    int saleProductPrice = 0;
+                    String typeName = "";
+                    for (int i = 0; i <response.length(); i++) {
+                        try {
+                            JSONObject jsonObject = response.getJSONObject(i);
+                            saleID = jsonObject.getInt("saleid");
+                            saleType = jsonObject.getInt("saletype");
+                            productID = jsonObject.getInt("productid");
+                            productName = jsonObject.getString("nameproduct");
+                            saleNumber = jsonObject.getInt("numbersale");
+                            orderDate = jsonObject.getString("orderdate");
+                            saleProductPrice = jsonObject.getInt("saleproductprice");
+                            typeName = jsonObject.getString("typename");
+                            arrSaleProduct.add(new SaleProduct(saleID,saleType,productID,productName,saleNumber,orderDate,saleProductPrice,typeName));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    saleProductAdapter.notifyDataSetChanged();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
             }
         });
         requestQueue.add(jsonArrayRequest);

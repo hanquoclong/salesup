@@ -7,34 +7,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
 import com.korealong.salesup.R;
-import com.korealong.salesup.model.Factory;
+import com.korealong.salesup.model.Salon;
 
 import java.util.ArrayList;
 
-
-public class FactoryAdapter extends BaseAdapter {
+public class SalonAdapter extends BaseAdapter {
 
     private Context context;
-    private ArrayList<Factory> arrFactory;
+    private ArrayList<Salon> arrSalon;
 
-    public FactoryAdapter(Context context, ArrayList<Factory> arrFac) {
+    public SalonAdapter(Context context, ArrayList<Salon> arrSalon) {
         this.context = context;
-        this.arrFactory = arrFac;
+        this.arrSalon = arrSalon;
     }
 
     public class ViewHolder {
-        public TextView txtNameFactory;
+        public TextView txtNameSalon;
     }
 
     @Override
     public int getCount() {
-        return arrFactory.size();
+        return arrSalon.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return arrFactory.get(position);
+        return arrSalon.get(position);
     }
 
     @Override
@@ -49,14 +49,16 @@ public class FactoryAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.layout_item_popup,null);
-            viewHolder.txtNameFactory = convertView.findViewById(R.id.txt_name);
+            viewHolder.txtNameSalon = convertView.findViewById(R.id.txt_name);
             convertView.setTag(viewHolder);
         }else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        Factory factory = (Factory) getItem(position);
-        viewHolder.txtNameFactory.setText(factory.nameFactory);
-        viewHolder.txtNameFactory.setEllipsize(TextUtils.TruncateAt.END);
+        Salon salon = (Salon) getItem(position);
+        viewHolder.txtNameSalon.setText(salon.salonname);
+        viewHolder.txtNameSalon.setEllipsize(TextUtils.TruncateAt.END);
         return convertView;
     }
+
+
 }

@@ -8,15 +8,19 @@ import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.korealong.salesup.R;
 import com.korealong.salesup.model.SaleProduct;
+import com.korealong.salesup.model.Salon;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class SaleProductAdapter extends RecyclerView.Adapter<SaleProductAdapter.ItemHolder> {
+public class SaleProductAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<SaleProduct> arrSale;
@@ -26,36 +30,43 @@ public class SaleProductAdapter extends RecyclerView.Adapter<SaleProductAdapter.
         this.arrSale = arrSale;
     }
 
-    @NonNull
-    @Override
-    public ItemHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_listitem_saleproduct,null);
-        return new ItemHolder(v);
+    public class ViewHolder {
+        public TextView txtNameType, txtSubProduct, txtSubPrice;
     }
-
     @Override
-    public void onBindViewHolder(@NonNull ItemHolder itemHolder, int i) {
-        SaleProduct saleProduct = arrSale.get(i);
-        Picasso.with(context).load(saleProduct.img)
-                .placeholder(R.drawable.no_image)
-                .error(R.drawable.error_image)
-                .into(itemHolder.imgSale);
-        /*String imgString = saleProduct.img;
-        byte[] decoded = Base64.decode(imgString,Base64.DEFAULT);
-        itemHolder.imgSale.setImageBitmap(BitmapFactory.decodeByteArray(decoded,0,decoded.length));*/
-    }
-
-    @Override
-    public int getItemCount() {
+    public int getCount() {
         return arrSale.size();
     }
 
-    class ItemHolder extends RecyclerView.ViewHolder
-    {
-        ImageView imgSale;
-        ItemHolder(@NonNull View itemView) {
-            super(itemView);
-            imgSale = itemView.findViewById(R.id.imgSale);
+    @Override
+    public Object getItem(int position) {
+        return arrSale.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder = null;
+        if (viewHolder == null) {
+            viewHolder = new ViewHolder();
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.layout_item_sale_product,null);
+            viewHolder.txtNameType = convertView.findViewById(R.id.txt_name_type);
+            viewHolder.txtSubPrice = convertView.findViewById(R.id.txt_sub_price);
+            viewHolder.txtSubProduct = convertView.findViewById(R.id.txt_sub_product);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
+        SaleProduct saleProduct = (SaleProduct) getItem(position);
+        viewHolder.txtNameType.setText(saleProduct.typeName);
+        DecimalFormat decimalFormat = new DecimalFormat("###,###,###");
+        viewHolder.txtSubPrice.setText(decimalFormat.format(saleProduct.saleProductPrice));
+        viewHolder.txtSubProduct.setText(saleProduct.productName);
+        return convertView;
     }
 }

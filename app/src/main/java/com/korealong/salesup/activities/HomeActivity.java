@@ -83,25 +83,23 @@ public class HomeActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.btn_logout);
         btnRoute = findViewById(R.id.btn_route);
         btnCreateExhibition = findViewById(R.id.btn_create_exhibition);
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        layout_home = inflater.inflate(R.layout.layout_home,null);
 
         drawer_layout = findViewById(R.id.drawer_layout);
         setSupportActionBar(toolbarHome);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbarHome.setNavigationIcon(android.R.drawable.ic_menu_sort_by_size);
 
-        LinearLayoutManager llmFac = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
-        viewFactories.setLayoutManager(llmFac);
-        arrFactory = new ArrayList<>();
-        factoryAdapter = new FactoryAdapter(this,arrFactory);
-        viewFactories.setAdapter(factoryAdapter);
+        //LinearLayoutManager llmFac = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+        //viewFactories.setLayoutManager(llmFac);
+        //arrFactory = new ArrayList<>();
+        //factoryAdapter = new FactoryAdapter(this,arrFactory);
+        //viewFactories.setAdapter(factoryAdapter);
 
         LinearLayoutManager llmSale = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
         viewSaleProducts.setLayoutManager(llmSale);
         arrSaleProduct = new ArrayList<>();
         saleProductAdapter = new SaleProductAdapter(this,arrSaleProduct);
-        viewSaleProducts.setAdapter(saleProductAdapter);
+        //viewSaleProducts.setAdapter(saleProductAdapter);
 
         arrProduct = new ArrayList<>();
         productAdapter = new ProductAdapter(this,arrProduct);
@@ -131,7 +129,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 if (scrollState == SCROLL_STATE_IDLE && viewProducts.getLastVisiblePosition() == arrProduct.size() -1 && !noMoreProduct) {
                     progress_loadmore.setVisibility(View.VISIBLE);
-                    serverHelper.getAllProductFromServer(getApplicationContext(),++pagination,arrProduct,productAdapter,progress_loadmore);
+                    //serverHelper.getAllProductFromServer(getApplicationContext(),++pagination,arrProduct,productAdapter,progress_loadmore);
 
                 }
             }
@@ -144,9 +142,9 @@ public class HomeActivity extends AppCompatActivity {
         viewProducts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intentDetail = new Intent(getApplicationContext(),DetailProductActivity.class);
-                intentDetail.putExtra("productID", arrProduct.get(position));
-                startActivity(intentDetail);
+                //Intent intentDetail = new Intent(getApplicationContext(),DetailProductActivity.class);
+                //intentDetail.putExtra("productID", arrProduct.get(position));
+                //startActivity(intentDetail);
             }
         });
 
