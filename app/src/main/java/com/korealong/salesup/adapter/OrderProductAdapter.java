@@ -1,7 +1,10 @@
 package com.korealong.salesup.adapter;
 
 import android.content.Context;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +14,16 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.korealong.salesup.R;
+import com.korealong.salesup.activities.CreateOrder;
 import com.korealong.salesup.model.OrderProduct;
+import com.korealong.salesup.model.Product;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class OrderProductAdapter extends BaseAdapter {
 
+    public static int number=1;
     private Context context;
     private ArrayList<OrderProduct> arrOrderProduct;
 
@@ -48,8 +54,9 @@ public class OrderProductAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder = null;
-        if (viewHolder == null){
+
+        final ViewHolder viewHolder;
+        if (convertView == null){
             viewHolder = new ViewHolder();
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.layout_item_order,null);
@@ -62,13 +69,50 @@ public class OrderProductAdapter extends BaseAdapter {
         }else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        OrderProduct orderProduct = (OrderProduct) getItem(position);
+        final OrderProduct orderProduct = (OrderProduct) getItem(position);
         viewHolder.txtNo.setText(String.valueOf(++position));
         viewHolder.txtNameOrderProduct.setText(orderProduct.productName);
         viewHolder.txtNameOrderProduct.setEllipsize(TextUtils.TruncateAt.END);
         DecimalFormat decimalFormat = new DecimalFormat("###,###,###");
         viewHolder.txtPrice.setText(decimalFormat.format(orderProduct.productPrice));
         viewHolder.edtNumber.setText("1");
+        final int oldNumber = Integer.parseInt(viewHolder.edtNumber.getText().toString());
+        number = Integer.parseInt(viewHolder.edtNumber.getText().toString());
+        final int totalamount = CreateOrder.totalamount;
+        final int unitprice = orderProduct.productPrice * number;
+        Log.d("getView: ",""+unitprice);
+        final int amount = totalamount - unitprice;
+        Log.d( "getView: ", ""+totalamount + " ---"+unitprice +"----"+amount);
+        viewHolder.edtNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString() == ""){
+
+                }
+                number = Integer.parseInt(s.toString());
+                int lastPrice = (unitprice * number / oldNumber) + amount;
+                int oldprice = ((number-oldNumber)*unitprice)+unitprice;
+                CreateOrder.txtTotalAmount.setText(String.valueOf(lastPrice+(lastPrice- oldprice)));
+            }
+        });
+        final int finalPosition = position;
+        viewHolder.btnDeleteOrderProduct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                arrOrderProduct.remove(finalPosition-1);
+                notifyDataSetChanged();
+            }
+        });
         return convertView;
     }
 }

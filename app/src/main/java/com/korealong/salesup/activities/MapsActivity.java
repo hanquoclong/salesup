@@ -48,7 +48,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         serverHelper = new ServerHelper();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
     }
 
     @Override

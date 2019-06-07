@@ -27,11 +27,13 @@ import com.korealong.salesup.activities.HomeActivity;
 import com.korealong.salesup.adapter.FactoryAdapter;
 import com.korealong.salesup.adapter.OrderProductAdapter;
 import com.korealong.salesup.adapter.ProductAdapter;
+import com.korealong.salesup.adapter.ReportAdapter;
 import com.korealong.salesup.adapter.SaleProductAdapter;
 import com.korealong.salesup.adapter.SalonAdapter;
 import com.korealong.salesup.model.Factory;
 import com.korealong.salesup.model.OrderProduct;
 import com.korealong.salesup.model.Product;
+import com.korealong.salesup.model.Report;
 import com.korealong.salesup.model.SaleProduct;
 import com.korealong.salesup.model.Salon;
 
@@ -49,6 +51,7 @@ import static android.content.ContentValues.TAG;
 import static com.korealong.salesup.utils.Constants.URL_GET_ALL_PRODUCT;
 import static com.korealong.salesup.utils.Constants.URL_GET_FACTORY;
 import static com.korealong.salesup.utils.Constants.URL_GET_PRODUCT;
+import static com.korealong.salesup.utils.Constants.URL_GET_REPORT;
 import static com.korealong.salesup.utils.Constants.URL_GET_SALE;
 import static com.korealong.salesup.utils.Constants.URL_GET_SALE_PRODUCT;
 import static com.korealong.salesup.utils.Constants.URL_GET_SALON;
@@ -281,6 +284,38 @@ public class ServerHelper {
                         }
                     }
                     saleProductAdapter.notifyDataSetChanged();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        requestQueue.add(jsonArrayRequest);
+    }
+
+    public void getReportFromServer(Context context, final ArrayList<Report> arrReport, final ReportAdapter reportAdapter) {
+        final RequestQueue requestQueue = Volley.newRequestQueue(context);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL_GET_REPORT, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                if (response != null) {
+                    String productName ="";
+                    String date = "";
+                    String status = "";
+                    for (int i = 0; i < response.length() ; i++) {
+                        try {
+                            JSONObject jsonObject = response.getJSONObject(i);
+                            productName = jsonObject.getString("nameproduct");
+                            date = jsonObject.getString("date");
+                            status = jsonObject.getString("status");
+                            arrReport.add(new Report(productName,date,status));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    reportAdapter.notifyDataSetChanged();
                 }
             }
         }, new Response.ErrorListener() {

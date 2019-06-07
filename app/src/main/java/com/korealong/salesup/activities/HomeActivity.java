@@ -37,7 +37,7 @@ public class HomeActivity extends AppCompatActivity {
     ProgressBar progress_loadmore;
     NavigationView navigation_view;
     DrawerLayout drawer_layout;
-    Button btnCreateExhibition, btnCancelExhibition, btnHistory, btnRoute, btnReport, btnLogout;
+    Button btnCreateExhibition, btnCancelExhibition, btnRoute, btnReport, btnLogout;
     View layout_home;
 
     ArrayList<Factory> arrFactory;
@@ -60,7 +60,6 @@ public class HomeActivity extends AppCompatActivity {
 
         initView();
         initObject();
-        initData();
         initEvent();
     }
 
@@ -83,23 +82,17 @@ public class HomeActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.btn_logout);
         btnRoute = findViewById(R.id.btn_route);
         btnCreateExhibition = findViewById(R.id.btn_create_exhibition);
+        btnReport = findViewById(R.id.btn_report);
 
         drawer_layout = findViewById(R.id.drawer_layout);
         setSupportActionBar(toolbarHome);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbarHome.setNavigationIcon(android.R.drawable.ic_menu_sort_by_size);
 
-        //LinearLayoutManager llmFac = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
-        //viewFactories.setLayoutManager(llmFac);
-        //arrFactory = new ArrayList<>();
-        //factoryAdapter = new FactoryAdapter(this,arrFactory);
-        //viewFactories.setAdapter(factoryAdapter);
-
         LinearLayoutManager llmSale = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
         viewSaleProducts.setLayoutManager(llmSale);
         arrSaleProduct = new ArrayList<>();
         saleProductAdapter = new SaleProductAdapter(this,arrSaleProduct);
-        //viewSaleProducts.setAdapter(saleProductAdapter);
 
         arrProduct = new ArrayList<>();
         productAdapter = new ProductAdapter(this,arrProduct);
@@ -110,41 +103,11 @@ public class HomeActivity extends AppCompatActivity {
         serverHelper = new ServerHelper();
     }
 
-    private void initData() {
-        //serverHelper.getFactoryFromServer(this,arrFactory,factoryAdapter);
-        //serverHelper.getSaleProductFromServer(this,arrSaleProduct,saleProductAdapter);
-        //serverHelper.getAllProductFromServer(getApplicationContext(),pagination,arrProduct,productAdapter,progress_loadmore);
-    }
-
     private void initEvent() {
         toolbarHome.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawer_layout.openDrawer(GravityCompat.START);
-            }
-        });
-
-        viewProducts.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                if (scrollState == SCROLL_STATE_IDLE && viewProducts.getLastVisiblePosition() == arrProduct.size() -1 && !noMoreProduct) {
-                    progress_loadmore.setVisibility(View.VISIBLE);
-                    //serverHelper.getAllProductFromServer(getApplicationContext(),++pagination,arrProduct,productAdapter,progress_loadmore);
-
-                }
-            }
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
-            }
-        });
-
-        viewProducts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Intent intentDetail = new Intent(getApplicationContext(),DetailProductActivity.class);
-                //intentDetail.putExtra("productID", arrProduct.get(position));
-                //startActivity(intentDetail);
             }
         });
 
@@ -171,6 +134,14 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intentOrder = new Intent(getApplicationContext(), CreateOrder.class);
                 startActivity(intentOrder);
+            }
+        });
+
+        btnReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentReport = new Intent(getApplicationContext(),ReportActivity.class);
+                startActivity(intentReport);
             }
         });
     }

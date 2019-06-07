@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,15 +30,16 @@ import com.korealong.salesup.model.Product;
 import com.korealong.salesup.model.SaleProduct;
 import com.korealong.salesup.model.Salon;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class CreateOrder extends AppCompatActivity {
     Toolbar toolbarExhibition;
-    ListView viewProducts;
+    public static ListView viewProducts;
     ImageButton btnSalon, btnFactory, btnSearch;
     Button btnDone;
     EditText  edtNote, edtTax;
-    TextView txtSalon, txtFactory, txtTotalAmount;
+    public static TextView txtSalon, txtFactory, txtTotalAmount;
     AutoCompleteTextView edtProduct;
     Dialog dialogSalon;
 
@@ -56,6 +59,7 @@ public class CreateOrder extends AppCompatActivity {
     SaleProductAdapter saleProductAdapter;
 
     ServerHelper serverHelper;
+    public static int totalamount = 0;
     public int factoryID = 0;
 
     @Override
@@ -154,7 +158,6 @@ public class CreateOrder extends AppCompatActivity {
                 arrProduct = new ArrayList<>();
                 productAdapter = new ProductAdapter(getApplicationContext(),arrProduct);
                 viewPopup.setAdapter(productAdapter);
-                Log.d("factoryID:" ,""+factoryID);
                 serverHelper.getProductByFactoryFromServer(getApplicationContext(),arrProduct,productAdapter,1,factoryID);
                 btnClosePopup.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -162,14 +165,23 @@ public class CreateOrder extends AppCompatActivity {
                         dialogSalon.dismiss();
                     }
                 });
+
                 viewPopup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        int unitprice =0;
+                        int total =0;
                         if (arrProduct.get(position).saleID == 0) {
-                            arrOderProduct.add(new OrderProduct(arrProduct.get(position).productID, arrProduct.get(position).unitPrice, arrProduct.get(position).nameProduct));
+                            arrOderProduct.add(new OrderProduct(arrProduct.get(position).productID, arrProduct.get(position).unitPrice,arrProduct.get(position).nameProduct));
                             orderProductAdapter.notifyDataSetChanged();
                             viewProducts.setAdapter(orderProductAdapter);
-
+                            for (int i=0; i < viewProducts.getCount(); i++) {
+                                unitprice = arrProduct.get(position).unitPrice;
+                                total = OrderProductAdapter.number * unitprice;
+                            }
+                            totalamount = totalamount + total;
+                            //DecimalFormat decimalFormat = new DecimalFormat("###,###,###");
+                            txtTotalAmount.setText(String.valueOf(totalamount));
                         }
                         if (arrProduct.get(position).saleID != 0){
                             dialogSalon.setContentView(R.layout.layout_popup_sale_product);
@@ -189,6 +201,7 @@ public class CreateOrder extends AppCompatActivity {
                             serverHelper.getSaleFromServer(getApplicationContext(),arrSaleProduct,saleProductAdapter);
                             dialogSalon.show();
                         }
+
                     }
                 });
                 dialogSalon.show();

@@ -1,7 +1,5 @@
 package com.korealong.salesup.model;
 
-import java.util.Date;
-
 public class SaleProduct {
 
     public int saleID;
