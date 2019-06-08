@@ -9,20 +9,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.korealong.salesup.R;
-import com.korealong.salesup.adapter.FactoryAdapter;
 import com.korealong.salesup.adapter.ProductAdapter;
 import com.korealong.salesup.adapter.SaleProductAdapter;
 import com.korealong.salesup.helper.ServerHelper;
-import com.korealong.salesup.model.Factory;
 import com.korealong.salesup.model.Product;
 import com.korealong.salesup.model.SaleProduct;
 import com.korealong.salesup.utils.PreferenceUtils;
@@ -37,11 +32,7 @@ public class HomeActivity extends AppCompatActivity {
     ProgressBar progress_loadmore;
     NavigationView navigation_view;
     DrawerLayout drawer_layout;
-    Button btnCreateExhibition, btnCancelExhibition, btnRoute, btnReport, btnLogout;
-    View layout_home;
-
-    ArrayList<Factory> arrFactory;
-    FactoryAdapter factoryAdapter;
+    Button btnCreateOrder, btnCancelOrder, btnRoute, btnReport, btnLogout;
 
     ArrayList<SaleProduct> arrSaleProduct;
     SaleProductAdapter saleProductAdapter;
@@ -81,8 +72,9 @@ public class HomeActivity extends AppCompatActivity {
         navigation_view = findViewById(R.id.navigation_view);
         btnLogout = findViewById(R.id.btn_logout);
         btnRoute = findViewById(R.id.btn_route);
-        btnCreateExhibition = findViewById(R.id.btn_create_exhibition);
+        btnCreateOrder = findViewById(R.id.btn_create_order);
         btnReport = findViewById(R.id.btn_report);
+        btnCancelOrder = findViewById(R.id.btn_cancel_order);
 
         drawer_layout = findViewById(R.id.drawer_layout);
         setSupportActionBar(toolbarHome);
@@ -129,10 +121,10 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        btnCreateExhibition.setOnClickListener(new View.OnClickListener() {
+        btnCreateOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentOrder = new Intent(getApplicationContext(), CreateOrder.class);
+                Intent intentOrder = new Intent(getApplicationContext(), CreateOrderActivity.class);
                 startActivity(intentOrder);
             }
         });
@@ -142,6 +134,14 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intentReport = new Intent(getApplicationContext(),ReportActivity.class);
                 startActivity(intentReport);
+            }
+        });
+
+        btnCancelOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentCancelOrder = new Intent(getApplicationContext(), CancelOrderActivity.class);
+                startActivity(intentCancelOrder);
             }
         });
     }

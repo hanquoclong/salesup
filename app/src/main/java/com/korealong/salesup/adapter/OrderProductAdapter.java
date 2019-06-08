@@ -14,9 +14,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.korealong.salesup.R;
-import com.korealong.salesup.activities.CreateOrder;
+import com.korealong.salesup.activities.CreateOrderActivity;
 import com.korealong.salesup.model.OrderProduct;
-import com.korealong.salesup.model.Product;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -77,8 +76,9 @@ public class OrderProductAdapter extends BaseAdapter {
         viewHolder.txtPrice.setText(decimalFormat.format(orderProduct.productPrice));
         viewHolder.edtNumber.setText("1");
         final int oldNumber = Integer.parseInt(viewHolder.edtNumber.getText().toString());
+
         number = Integer.parseInt(viewHolder.edtNumber.getText().toString());
-        final int totalamount = CreateOrder.totalamount;
+        final int totalamount = CreateOrderActivity.totalamount;
         final int unitprice = orderProduct.productPrice * number;
         Log.d("getView: ",""+unitprice);
         final int amount = totalamount - unitprice;
@@ -102,7 +102,7 @@ public class OrderProductAdapter extends BaseAdapter {
                 number = Integer.parseInt(s.toString());
                 int lastPrice = (unitprice * number / oldNumber) + amount;
                 int oldprice = ((number-oldNumber)*unitprice)+unitprice;
-                CreateOrder.txtTotalAmount.setText(String.valueOf(lastPrice+(lastPrice- oldprice)));
+                CreateOrderActivity.txtTotalAmount.setText(String.valueOf(lastPrice+(lastPrice- oldprice)));
             }
         });
         final int finalPosition = position;

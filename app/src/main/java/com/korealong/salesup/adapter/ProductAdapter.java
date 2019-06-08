@@ -1,25 +1,16 @@
 package com.korealong.salesup.adapter;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.korealong.salesup.MainActivity;
 import com.korealong.salesup.R;
-import com.korealong.salesup.activities.CreateOrder;
 import com.korealong.salesup.model.Product;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 

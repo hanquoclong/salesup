@@ -5,8 +5,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -24,14 +22,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.korealong.salesup.activities.HomeActivity;
+import com.korealong.salesup.adapter.CancelOrderAdapter;
 import com.korealong.salesup.adapter.FactoryAdapter;
-import com.korealong.salesup.adapter.OrderProductAdapter;
 import com.korealong.salesup.adapter.ProductAdapter;
 import com.korealong.salesup.adapter.ReportAdapter;
 import com.korealong.salesup.adapter.SaleProductAdapter;
 import com.korealong.salesup.adapter.SalonAdapter;
 import com.korealong.salesup.model.Factory;
-import com.korealong.salesup.model.OrderProduct;
 import com.korealong.salesup.model.Product;
 import com.korealong.salesup.model.Report;
 import com.korealong.salesup.model.SaleProduct;
@@ -43,17 +40,17 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import static android.content.ContentValues.TAG;
+import static com.korealong.salesup.utils.Constants.URL_DELETE_REPORT;
 import static com.korealong.salesup.utils.Constants.URL_GET_ALL_PRODUCT;
+import static com.korealong.salesup.utils.Constants.URL_GET_CANCEL_REPORT;
 import static com.korealong.salesup.utils.Constants.URL_GET_FACTORY;
 import static com.korealong.salesup.utils.Constants.URL_GET_PRODUCT;
 import static com.korealong.salesup.utils.Constants.URL_GET_REPORT;
 import static com.korealong.salesup.utils.Constants.URL_GET_SALE;
-import static com.korealong.salesup.utils.Constants.URL_GET_SALE_PRODUCT;
 import static com.korealong.salesup.utils.Constants.URL_GET_SALON;
 import static com.korealong.salesup.utils.Constants.URL_LOCATION;
 
@@ -67,7 +64,6 @@ public class ServerHelper {
                 if (response != null) {
                     int ID = 0;
                     String nameFactory = "";
-                    List<String> listProducts = new ArrayList<String>();
                     for (int i = 0; i < response.length(); i++) {
                         try {
                             JSONObject jsonObject = response.getJSONObject(i);
@@ -295,22 +291,25 @@ public class ServerHelper {
         requestQueue.add(jsonArrayRequest);
     }
 
-    public void getReportFromServer(Context context, final ArrayList<Report> arrReport, final ReportAdapter reportAdapter) {
+    public void getReportFromServer(Context context, final ArrayList<Report> arrReport, final ReportAdapter reportAdapter,String dateFrom, String dateTo) {
         final RequestQueue requestQueue = Volley.newRequestQueue(context);
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL_GET_REPORT, new Response.Listener<JSONArray>() {
+        String link = URL_GET_REPORT+dateFrom+"&dateto="+dateTo;
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(link, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 if (response != null) {
+                    int reportID =0;
                     String productName ="";
                     String date = "";
                     String status = "";
                     for (int i = 0; i < response.length() ; i++) {
                         try {
                             JSONObject jsonObject = response.getJSONObject(i);
+                            reportID = jsonObject.getInt("idreport");
                             productName = jsonObject.getString("nameproduct");
                             date = jsonObject.getString("date");
                             status = jsonObject.getString("status");
-                            arrReport.add(new Report(productName,date,status));
+                            arrReport.add(new Report(productName,date,status,reportID));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -325,5 +324,56 @@ public class ServerHelper {
             }
         });
         requestQueue.add(jsonArrayRequest);
+    }
+
+    public void getCancelReportFromServer(Context context, final ArrayList<Report> arrReport, final CancelOrderAdapter cancelOrderAdapter) {
+        final RequestQueue requestQueue = Volley.newRequestQueue(context);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL_GET_CANCEL_REPORT, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                if (response != null) {
+                    int reportID = 0;
+                    String productName ="";
+                    String date = "";
+                    String status = "";
+                    for (int i = 0; i < response.length() ; i++) {
+                        try {
+                            JSONObject jsonObject = response.getJSONObject(i);
+                            reportID = jsonObject.getInt("idreport");
+                            productName = jsonObject.getString("nameproduct");
+                            date = jsonObject.getString("date");
+                            status = jsonObject.getString("status");
+                            arrReport.add(new Report(productName,date,status,reportID));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    cancelOrderAdapter.notifyDataSetChanged();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        requestQueue.add(jsonArrayRequest);
+    }
+
+    public void deleteOrderFromServer(Context context, final int reportID) {
+        final RequestQueue requestQueue = Volley.newRequestQueue(context);
+        String link = URL_DELETE_REPORT+reportID;
+        StringRequest stringRequest = new StringRequest(link, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        requestQueue.add(stringRequest);
     }
 }

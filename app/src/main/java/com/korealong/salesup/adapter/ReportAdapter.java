@@ -56,9 +56,9 @@ public class ReportAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         Report report = (Report) getItem(position);
-        viewHolder.txtProductName.setText(report.productName);
-        viewHolder.txtDate.setText(report.date);
-        viewHolder.txtStatus.setText(report.status);
+            viewHolder.txtProductName.setText(report.productName);
+            viewHolder.txtDate.setText(report.date);
+            viewHolder.txtStatus.setText(report.status);
         return convertView;
     }
 }

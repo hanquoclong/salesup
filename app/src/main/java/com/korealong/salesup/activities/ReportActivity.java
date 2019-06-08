@@ -1,16 +1,13 @@
 package com.korealong.salesup.activities;
 
 import android.app.DatePickerDialog;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.korealong.salesup.MainActivity;
 import com.korealong.salesup.R;
 import com.korealong.salesup.adapter.ReportAdapter;
 import com.korealong.salesup.helper.ServerHelper;
@@ -22,7 +19,7 @@ import java.util.Calendar;
 
 public class ReportActivity extends AppCompatActivity {
 
-    TextView txtDateFrom, txtDateTo;
+    public TextView txtDateFrom, txtDateTo;
     ListView viewReports;
     DatePickerDialog.OnDateSetListener fromDateListener,toDateListener;
     Calendar calendar;
@@ -30,6 +27,8 @@ public class ReportActivity extends AppCompatActivity {
 
     ArrayList<Report> arrReport;
     ReportAdapter reportAdapter;
+
+    String dateFrom, dateTo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +56,6 @@ public class ReportActivity extends AppCompatActivity {
     }
 
     private void initEvent() {
-        serverHelper.getReportFromServer(getApplicationContext(),arrReport,reportAdapter);
 
         txtDateFrom.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +71,7 @@ public class ReportActivity extends AppCompatActivity {
                 calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 txtDateFrom.setText(simpleDateFormat.format(calendar.getTime()));
+                dateFrom = txtDateFrom.getText().toString().trim();
             }
         };
 
@@ -91,6 +90,8 @@ public class ReportActivity extends AppCompatActivity {
                 calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 txtDateTo.setText(simpleDateFormat.format(calendar.getTime()));
+                dateTo = txtDateTo.getText().toString().trim();
+                serverHelper.getReportFromServer(getApplicationContext(),arrReport,reportAdapter,dateFrom,dateTo);
             }
         };
     }

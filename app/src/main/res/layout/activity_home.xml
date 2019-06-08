@@ -111,12 +111,12 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/btn_create_exhibition"
+                    android:id="@+id/btn_create_order"
                     android:text="Tạo đơn hàng"
                     android:layout_width="200dp"
                     android:layout_height="60dp"/>
                 <Button
-                    android:id="@+id/btn_cancel_exhibition"
+                    android:id="@+id/btn_cancel_order"
                     android:text="Trả hàng"
                     android:layout_width="200dp"
                     android:layout_height="60dp"/>

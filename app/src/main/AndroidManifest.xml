@@ -22,8 +22,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.ReportActivity"></activity>
-        <activity android:name=".activities.CreateOrder" />
+        <activity android:name=".activities.CancelOrderActivity"></activity>
+        <activity android:name=".activities.ReportActivity" />
+        <activity android:name=".activities.CreateOrderActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

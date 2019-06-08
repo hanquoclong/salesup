@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -15,7 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.korealong.salesup.R;
 import com.korealong.salesup.adapter.FactoryAdapter;
@@ -29,11 +27,9 @@ import com.korealong.salesup.model.OrderProduct;
 import com.korealong.salesup.model.Product;
 import com.korealong.salesup.model.SaleProduct;
 import com.korealong.salesup.model.Salon;
-
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class CreateOrder extends AppCompatActivity {
+public class CreateOrderActivity extends AppCompatActivity {
     Toolbar toolbarExhibition;
     public static ListView viewProducts;
     ImageButton btnSalon, btnFactory, btnSearch;
@@ -172,7 +168,7 @@ public class CreateOrder extends AppCompatActivity {
                         int unitprice =0;
                         int total =0;
                         if (arrProduct.get(position).saleID == 0) {
-                            arrOderProduct.add(new OrderProduct(arrProduct.get(position).productID, arrProduct.get(position).unitPrice,arrProduct.get(position).nameProduct));
+                            arrOderProduct.add(new OrderProduct(arrProduct.get(position).productID, arrProduct.get(position).unitPrice,OrderProductAdapter.number,arrProduct.get(position).nameProduct));
                             orderProductAdapter.notifyDataSetChanged();
                             viewProducts.setAdapter(orderProductAdapter);
                             for (int i=0; i < viewProducts.getCount(); i++) {
@@ -186,7 +182,7 @@ public class CreateOrder extends AppCompatActivity {
                         if (arrProduct.get(position).saleID != 0){
                             dialogSalon.setContentView(R.layout.layout_popup_sale_product);
                             ImageButton btnClosePopupSale = dialogSalon.findViewById(R.id.btn_close_popup_sale);
-                            TextView txtNameSaleProduct = dialogSalon.findViewById(R.id.txt_name_sale_product);
+                            final TextView txtNameSaleProduct = dialogSalon.findViewById(R.id.txt_name_sale_product);
                             ListView viewPopupSaleProduct = dialogSalon.findViewById(R.id.listview_popup_sale_product);
                             arrSaleProduct = new ArrayList<>();
                             saleProductAdapter = new SaleProductAdapter(getApplicationContext(),arrSaleProduct);
@@ -197,14 +193,54 @@ public class CreateOrder extends AppCompatActivity {
                                     dialogSalon.dismiss();
                                 }
                             });
-                            txtNameSaleProduct.setText(arrProduct.get(position).nameProduct);
+                            final int productPrice = arrProduct.get(position).unitPrice;
+                            final int productID = arrProduct.get(position).productID;
+                            final String productName = arrProduct.get(position).nameProduct;
+                            txtNameSaleProduct.setText(productName + " ("+ productPrice +")");
                             serverHelper.getSaleFromServer(getApplicationContext(),arrSaleProduct,saleProductAdapter);
+                            viewPopupSaleProduct.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    int unitprice =0;
+                                    int total =0;
+                                    arrOderProduct.add(new OrderProduct(productID, productPrice,OrderProductAdapter.number,productName+" ("+arrSaleProduct.get(position).productName+")"));
+                                    orderProductAdapter.notifyDataSetChanged();
+                                    String sale = arrSaleProduct.get(position).productName;
+                                    //arrOderProduct.add(new OrderProduct());
+                                    viewProducts.setAdapter(orderProductAdapter);
+                                    for (int i=0; i < viewProducts.getCount(); i++) {
+                                        total = OrderProductAdapter.number * productPrice;
+                                    }
+                                    totalamount = totalamount + total;
+                                    txtTotalAmount.setText(String.valueOf(totalamount));
+                                }
+                            });
                             dialogSalon.show();
                         }
-
                     }
                 });
                 dialogSalon.show();
+            }
+        });
+        edtTax.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String tax = s.toString().trim();
+                if (tax.isEmpty() || tax.length() == 0 || tax.equals("") || tax == null) {
+                    txtTotalAmount.setText(String.valueOf(totalamount));
+                } else {
+                    txtTotalAmount.setText(String.valueOf(totalamount - (totalamount * Integer.parseInt(tax) / 100)));
+                }
             }
         });
     }
