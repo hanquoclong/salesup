@@ -1,6 +1,7 @@
 package com.korealong.salesup.adapter;
 
 import android.content.Context;
+import android.support.v4.math.MathUtils;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -17,12 +18,13 @@ import com.korealong.salesup.R;
 import com.korealong.salesup.activities.CreateOrderActivity;
 import com.korealong.salesup.model.OrderProduct;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class OrderProductAdapter extends BaseAdapter {
 
     public static int number=1;
+    int oldprice = 0;
+    private int totalNew = 0;
     private Context context;
     private ArrayList<OrderProduct> arrOrderProduct;
 
@@ -72,17 +74,10 @@ public class OrderProductAdapter extends BaseAdapter {
         viewHolder.txtNo.setText(String.valueOf(++position));
         viewHolder.txtNameOrderProduct.setText(orderProduct.productName);
         viewHolder.txtNameOrderProduct.setEllipsize(TextUtils.TruncateAt.END);
-        DecimalFormat decimalFormat = new DecimalFormat("###,###,###");
-        viewHolder.txtPrice.setText(decimalFormat.format(orderProduct.productPrice));
+        //DecimalFormat decimalFormat = new DecimalFormat("###,###,###");
+        viewHolder.txtPrice.setText(String.valueOf(orderProduct.productPrice));
         viewHolder.edtNumber.setText("1");
-        final int oldNumber = Integer.parseInt(viewHolder.edtNumber.getText().toString());
 
-        number = Integer.parseInt(viewHolder.edtNumber.getText().toString());
-        final int totalamount = CreateOrderActivity.totalamount;
-        final int unitprice = orderProduct.productPrice * number;
-        Log.d("getView: ",""+unitprice);
-        final int amount = totalamount - unitprice;
-        Log.d( "getView: ", ""+totalamount + " ---"+unitprice +"----"+amount);
         viewHolder.edtNumber.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -96,15 +91,18 @@ public class OrderProductAdapter extends BaseAdapter {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.toString() == ""){
-
-                }
                 number = Integer.parseInt(s.toString());
-                int lastPrice = (unitprice * number / oldNumber) + amount;
-                int oldprice = ((number-oldNumber)*unitprice)+unitprice;
-                CreateOrderActivity.txtTotalAmount.setText(String.valueOf(lastPrice+(lastPrice- oldprice)));
+                oldprice = orderProduct.productPrice;
+                viewHolder.txtPrice.setText(String.valueOf(number * orderProduct.productPrice));
+                int totalOld = CreateOrderActivity.totalamount;
+                totalNew = totalOld + Integer.parseInt(viewHolder.txtPrice.getText().toString()) - oldprice;
+                Log.d( "olddata: ","oldprice: "+oldprice);
+                Log.d("afterTextChanged: ", "number new: "+s.toString()+" total new: "+totalNew);
+                CreateOrderActivity.txtTotalAmount.setText(String.valueOf(totalNew));
+
             }
         });
+
         final int finalPosition = position;
         viewHolder.btnDeleteOrderProduct.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -56,6 +57,7 @@ public class CreateOrderActivity extends AppCompatActivity {
 
     ServerHelper serverHelper;
     public static int totalamount = 0;
+    public  int total =0;
     public int factoryID = 0;
 
     @Override
@@ -201,12 +203,9 @@ public class CreateOrderActivity extends AppCompatActivity {
                             viewPopupSaleProduct.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    int unitprice =0;
                                     int total =0;
                                     arrOderProduct.add(new OrderProduct(productID, productPrice,OrderProductAdapter.number,productName+" ("+arrSaleProduct.get(position).productName+")"));
                                     orderProductAdapter.notifyDataSetChanged();
-                                    String sale = arrSaleProduct.get(position).productName;
-                                    //arrOderProduct.add(new OrderProduct());
                                     viewProducts.setAdapter(orderProductAdapter);
                                     for (int i=0; i < viewProducts.getCount(); i++) {
                                         total = OrderProductAdapter.number * productPrice;

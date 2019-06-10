@@ -2,6 +2,7 @@ package com.korealong.salesup.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -13,12 +14,15 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.korealong.salesup.R;
 import com.korealong.salesup.helper.InputValidation;
 import com.korealong.salesup.helper.ServerHelper;
 import com.korealong.salesup.utils.PreferenceUtils;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.HashMap;
@@ -82,27 +86,34 @@ public class LoginActivity extends AppCompatActivity {
 
     private void getUserFromServer() {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        request = new StringRequest(Request.Method.POST, URL_LOGIN, new Response.Listener<String>() {
+        String link = URL_LOGIN+edtEmail.getText().toString().trim()+"&password="+edtPassword.getText().toString().trim();
+        request = new StringRequest(Request.Method.GET, link, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    if (jsonObject.names().get(0).equals("success")) {
-
-                        String email = edtEmail.getText().toString().trim();
-                        PreferenceUtils.saveEmail(email, LoginActivity.this);
-                        Intent accountsIntent = new Intent(LoginActivity.this, HomeActivity.class);
-                        accountsIntent.putExtra("EMAIL", email);
-                        edtEmail.setText(null);
-                        edtPassword.setText(null);
-                        startActivity(accountsIntent);
-                        finish();
+                if (response != null && response.length() >2) {
+                    String userName ="";
+                    String userEmail = "";
+                    JSONArray jsonArray = null;
+                    try {
+                        jsonArray = new JSONArray(response);
+                        for (int i = 0 ; i < response.length() ; i++) {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            userName = jsonObject.getString("name");
+                            userEmail = jsonObject.getString("email");
+                            PreferenceUtils.saveEmail(userEmail,LoginActivity.this);
+                            PreferenceUtils.saveUserName(userName,LoginActivity.this);
+                            Intent accountsIntent = new Intent(LoginActivity.this, HomeActivity.class);
+                            accountsIntent.putExtra("EMAIL", userEmail);
+                            edtEmail.setText(null);
+                            edtPassword.setText(null);
+                            startActivity(accountsIntent);
+                            finish();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                    else {
-                        Toast.makeText(LoginActivity.this, "Error "+jsonObject.getString("error"), Toast.LENGTH_LONG).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Thu lai", Toast.LENGTH_SHORT).show();
                 }
             }
         }, new Response.ErrorListener() {

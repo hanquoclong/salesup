@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.korealong.salesup.R;
 import com.korealong.salesup.adapter.ProductAdapter;
@@ -33,6 +34,7 @@ public class HomeActivity extends AppCompatActivity {
     NavigationView navigation_view;
     DrawerLayout drawer_layout;
     Button btnCreateOrder, btnCancelOrder, btnRoute, btnReport, btnLogout;
+    TextView txtUserName, txtUserEmail;
 
     ArrayList<SaleProduct> arrSaleProduct;
     SaleProductAdapter saleProductAdapter;
@@ -41,7 +43,6 @@ public class HomeActivity extends AppCompatActivity {
     ProductAdapter productAdapter;
 
     ServerHelper serverHelper;
-    int pagination= 1;
     public static boolean noMoreProduct = false;
 
     @Override
@@ -52,6 +53,7 @@ public class HomeActivity extends AppCompatActivity {
         initView();
         initObject();
         initEvent();
+        initData();
     }
 
     @Override
@@ -70,6 +72,8 @@ public class HomeActivity extends AppCompatActivity {
         viewSaleProducts = findViewById(R.id.recyclerview_saleproducts);
         progress_loadmore = findViewById(R.id.progress_loadmore);
         navigation_view = findViewById(R.id.navigation_view);
+        txtUserEmail = findViewById(R.id.txt_email);
+        txtUserName = findViewById(R.id.txt_name);
         btnLogout = findViewById(R.id.btn_logout);
         btnRoute = findViewById(R.id.btn_route);
         btnCreateOrder = findViewById(R.id.btn_create_order);
@@ -144,5 +148,12 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intentCancelOrder);
             }
         });
+    }
+
+    private void initData() {
+        String userName = PreferenceUtils.getUserName(HomeActivity.this);
+        String userEmail = PreferenceUtils.getEmail(HomeActivity.this);
+        txtUserName.setText(userName);
+        txtUserEmail.setText(userEmail);
     }
 }
